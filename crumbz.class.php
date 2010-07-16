@@ -1,14 +1,14 @@
 <?php
 
 /**
- *  File		crumbz.class.php (requires MODx Revolution 2.x)
+ *  File	crumbz.class.php (requires MODx Revolution 2.x)
  * Created on	Jul 02, 2010
- * Project		shawn_wilkerson
+ * Project	shawn_wilkerson
  * @package 	crumbz
  * @version	1.0
  * @category	navigation
- * @author		W. Shawn Wilkerson
- * @link		http://www.shawnWilkerson.com
+ * @author	W. Shawn Wilkerson
+ * @link	http://www.shawnWilkerson.com
  * @copyright  Copyright (c) 2010, W. Shawn Wilkerson.  All rights reserved.
  * @license  	GPL
  *

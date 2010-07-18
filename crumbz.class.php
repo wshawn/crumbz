@@ -1,14 +1,13 @@
 <?php
-
 /**
- *  File	crumbz.class.php (requires MODx Revolution 2.x)
+ *  File		crumbz.class.php (requires MODx Revolution 2.x)
  * Created on	Jul 02, 2010
- * Project	shawn_wilkerson
+ * Project		shawn_wilkerson
  * @package 	crumbz
  * @version	1.0
  * @category	navigation
- * @author	W. Shawn Wilkerson
- * @link	http://www.shawnWilkerson.com
+ * @author		W. Shawn Wilkerson
+ * @link		http://www.shawnWilkerson.com
  * @copyright  Copyright (c) 2010, W. Shawn Wilkerson.  All rights reserved.
  * @license  	GPL
  *
@@ -25,11 +24,22 @@ class Crumbz
 		 * Import $modx reference
 		 */
 		$this->modx= & $modx;
+		
+		/*
+		 * establish site start
+		 */
+		$this->siteStartID = $this->modx->getOption('site_start');
+		
+		/*
+		 * Establish current resource ID 
+		 */
+		$this->docID = $this->modx->resource->get('id');
+
 		/*
 		 * Establish base settings -- merging incoming overrides
 		 */
 		$this->_config= array_merge(array (
-			'id' => $this->modx->resource->get('id'),
+			'id' => $this->docID,
 			'depth' => 10,
 			'format' => 'bar',
 			'seperator' => ' &raquo; ',
@@ -41,10 +51,12 @@ class Crumbz
 
 			
 		), $config);
+
 		/*
 		 * establish parents of user provided document
 		 */
 		$this->parents= $this->modx->getParentIds($this->_config['id'], $this->_config['depth']);
+
 		/*
 		 * Reverse array to top-down order
 		 */
@@ -67,7 +79,7 @@ class Crumbz
 	public function run()
 	{
 		$this->setHome();
-		$this->parents[]= $this->setLastCrumb();
+		$this->parents = $this->setLastCrumb();
 		$this->links= $this->getNavigation();
 		return $this->setFormat();
 	}
@@ -84,20 +96,24 @@ class Crumbz
 			$obj= $this->modx->getObject('modDocument', array (
 				'id' => $resourceID
 			));
+
 			/*
 			 * Stop processing on deleted documents as the tree will also be deleted
 			 */
 			if ($obj->get('deleted') == false)
 			{
+
 				/*
 				 * Show only published documents and those not hidden from menus
 				 */
 				if (($obj->get('published') == true) && ($obj->get('hidemenu') == false))
 				{
+
 					/*
 					 * Capture text to be used for link / text
 					 */
 					$linkText= $obj->get($useText);
+
 					/*
 					 * Match the title text to the repective linkText.
 					 * pageTitle gets longTitle as Title="" text
@@ -108,6 +124,7 @@ class Crumbz
 				}
 			}
 		}
+
 		/*
 		 * Replace the last link with straight text
 		 */
@@ -116,6 +133,7 @@ class Crumbz
 			array_pop($o);
 			$o[]= $linkText;
 		}
+
 		/*
 		 * clear resources
 		 */
@@ -152,9 +170,11 @@ class Crumbz
 		}
 		return $o;
 	}
-
 	/**
-	 * Based on the removeSiteHome parameter: removes the array key, sets the key to the site_start, or leaves it as set
+	 * Establishes the current site home and adjusts the $this->parents array
+	 * Based on the removeSiteHome parameter: removes the array key.
+	 * Or sets the key to the site_start, or leaves it as currently set in situations a subdoc is the main doc
+	 * @return int | empty .
 	 */
 	public function setHome()
 	{
@@ -163,16 +183,18 @@ class Crumbz
 			array_shift($this->parents);
 		} else
 		{
-			$this->parents[0]= ($this->parents[0] == 0) ? $this->modx->getOption('site_start') : $this->parents[0];
+			$this->parents[0]= ($this->parents[0] == 0) ? $this->siteStartID : $this->parents[0];
 		}
 	}
 
 	/**
-	* Based on the removeLastChild parameter: adds the array key, or returns nothing
-	*/
-	public function setLastCrumb()
+	 * Based on the removeLastChild parameter
+	 * @returns array filtered array key of $this->parents removing duplicates
+	 */
+	public function setLastCrumb()	
 	{
-		return ($this->_config['removeLastID'] == false) ? $this->_config['id'] : '';
+		$this->parents[] = ($this->_config['removeLastID'] == false) ? $this->_config['id'] : '';
+		return array_unique($this->parents);		
 	}
 }
 ?>

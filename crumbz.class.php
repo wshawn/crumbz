@@ -128,7 +128,7 @@ class Crumbz
 		/*
 		 * Replace the last link with straight text
 		 */
-		if ($this->_config['lastChildAsLink'] == true)
+		if ($this->_config['lastChildAsLink'] == false)
 		{
 			array_pop($o);
 			$o[]= $linkText;

@@ -38,17 +38,17 @@ if (!class_exists(Crumbz)) {
             * Establish base settings -- merging incoming overrides
             */
             $this->_config = array_merge(array(
-                'id' => $this->docID,
-                'depth' => 10,
-                'format' => 'bar',
-                'seperator' => ' &raquo; ',
-                'textOnly' => false,
-                'removeSiteHome' => false,
-                'removeLastID' => false,
-                'lastChildAsLink' => false,
-                'useLongTitle' => false,
-                'reverse' => false,
-            ), $config);
+                                              'id' => $this->docID,
+                                              'depth' => 10,
+                                              'format' => 'bar',
+                                              'seperator' => ' &raquo; ',
+                                              'textOnly' => false,
+                                              'removeSiteHome' => false,
+                                              'removeLastID' => false,
+                                              'lastChildAsLink' => false,
+                                              'useLongTitle' => false,
+                                              'reverse' => false,
+                                         ), $config);
 
             /*
             * establish parents of user provided document
@@ -91,31 +91,37 @@ if (!class_exists(Crumbz)) {
             foreach ($this->parents as $resourceID)
             {
                 $obj = $this->modx->getObject('modDocument', array(
-                    'id' => $resourceID
-                ));
-
-                /*
-                * Stop processing on deleted documents as the tree will also be deleted
-                */
-                if ($obj->get('deleted') == false) {
-
+                                                                  'id' => $resourceID
+                                                             ));
+                /**
+                 * Only process objects
+                 */
+                if (is_object($obj)) {
                     /*
-                    * Show only published documents and those not hidden from menus
+                    * Stop processing on deleted documents as the tree will also be deleted
                     */
-                    if (($obj->get('published') == true) && ($obj->get('hidemenu') == false)) {
+                    if ($obj->get('deleted') == false) {
 
                         /*
-                        * Capture text to be used for link / text
+                        * Show only published documents and those not hidden from menus
                         */
-                        $linkText = $obj->get($useText);
+                        if (($obj->get('published') == true) && ($obj->get('hidemenu') == false)) {
 
-                        /*
-                        * Match the title text to the repective linkText.
-                        * pageTitle gets longTitle as Title="" text
-                        * longTitle gets description as Title="" text
-                        */
-                        $linkTitle = ($this->_config['useLongTitle'] == true) ? $obj->get('description') : $obj->get('longtitle');
-                        $o[] = ($this->_config['textOnly'] == true) ? $linkText : '<a href="' . $this->modx->makeUrl($resourceID) . '" title="' . $linkTitle . '">' . $linkText . '</a>';
+                            /*
+                            * Capture text to be used for link / text
+                            */
+                            $linkText = $obj->get($useText);
+
+                            /*
+                            * Match the title text to the repective linkText.
+                            * pageTitle gets longTitle as Title="" text
+                            * longTitle gets description as Title="" text
+                            */
+                            $linkTitle = ($this->_config['useLongTitle'] == true) ? $obj->get('description')
+                                    : $obj->get('longtitle');
+                            $o[] = ($this->_config['textOnly'] == true) ? $linkText
+                                    : '<a href="' . $this->modx->makeUrl($resourceID) . '" title="' . $linkTitle . '">' . $linkText . '</a>';
+                        }
                     }
                 }
             }
@@ -192,8 +198,8 @@ if (!class_exists(Crumbz)) {
          * @returns array filtered array key of $this->parents removing duplicates
          */
         public function setLastCrumb() {
-            if (($this->_config['id'] != $this->siteStartID) &&  ($this->_config['removeLastID'] == false)) {
-                    $this->parents[] = $this->_config['id'];
+            if (($this->_config['id'] != $this->siteStartID) && ($this->_config['removeLastID'] == false)) {
+                $this->parents[] = $this->_config['id'];
             }
         }
     }

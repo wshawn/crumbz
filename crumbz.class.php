@@ -47,6 +47,7 @@ if (!class_exists(Crumbz)) {
                                               'removeLastID' => false,
                                               'lastChildAsLink' => false,
                                               'useLongTitle' => false,
+                                              'useSeperatorWithList' => false,
                                               'reverse' => false,
                                          ), $config);
 
@@ -113,7 +114,7 @@ if (!class_exists(Crumbz)) {
                             $linkText = $obj->get($useText);
 
                             /*
-                            * Match the title text to the repective linkText.
+                            * Match the title text to the respective linkText.
                             * pageTitle gets longTitle as Title="" text
                             * longTitle gets description as Title="" text
                             */
@@ -156,13 +157,16 @@ if (!class_exists(Crumbz)) {
          */
         public function setFormat() {
             $c = 0;
+            $o = '';
             $numLinks = count($this->links);
             foreach ($this->links as $location)
             {
                 switch ($this->_config['format'])
                 {
                     case 'list' :
-                        $o .= '<li>' . $location . '</li>';
+                        $o .= '<li>' . $location;
+                        $o .= ($this->_config['useSeperatorWithList'] && ($numLinks !== ++$c)) ? $this->_config['seperator'] : '';
+                        $o .= '</li>';
                         break;
 
                     case 'vertical' :
